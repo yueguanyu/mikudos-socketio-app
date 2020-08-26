@@ -69,6 +69,51 @@ var {
 } = require('mikudos-socketio-app');
 ```
 
+Use wss or https:
+
+```ts
+import {
+  Application,
+  Authentication,
+  AuthenticationRequest,
+  RpcServiceMethods,
+  JSON_RPC_HANDLER,
+  CHAT_HANDLER,
+  DUPLEX_HANDLER,
+} from 'mikudos-socketio-app';
+
+import https from 'https';
+import socket from 'socket.io';
+import rpcs from './rpcs';
+import publish from './publish';
+import authentication from './authentication';
+import message from './message';
+import duplexs from './duplexs';
+import inter_service_clients from './inter_service_clients';
+
+const rootNamespace = '/';
+const server = https.createServer({
+  key: fs.readFileSync('privatekey.pem'),
+  cert: fs.readFileSync('certificate.pem'),
+});
+const io = socket(server, {
+  transports: ['websocket'],
+});
+
+const app = new Application(io, { rootNamespace });
+app.configure(inter_service_clients);
+app.configure(authentication);
+app.configure(rpcs);
+app.configure(publish);
+app.configure(message);
+app.configure(duplexs);
+
+app.init();
+
+server.listen(app.get('port'));
+console.log('socket.io server started at port: ' + app.get('port'));
+```
+
 ![mikudos](https://raw.githubusercontent.com/mikudos/doc/master/assets/images/structure.png)
 
 new update
