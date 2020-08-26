@@ -53,7 +53,7 @@ export class DUPLEX_HANDLER extends HandlerBase {
             async (data, callback: Function) => {
                 const [namespace, method] = String(data.method).split('.');
                 let res = await this.send(namespace, method, data.data, socket);
-                callback(res);
+                typeof callback === 'function' && callback(res);
             }
         );
         socket.on(
@@ -61,7 +61,7 @@ export class DUPLEX_HANDLER extends HandlerBase {
             async (data, callback: Function) => {
                 const [namespace, method] = String(data.method).split('.');
                 let res = await this.cancel(namespace, method, socket);
-                callback(res);
+                typeof callback === 'function' && callback(res);
             }
         );
     }
